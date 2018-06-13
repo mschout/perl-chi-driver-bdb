@@ -1,15 +1,17 @@
+# COPYRIGHT
+
 package CHI::Driver::BerkeleyDB;
-use 5.006;
-use BerkeleyDB;
-use CHI::Util qw(read_dir);
-use File::Path qw(mkpath);
-use Moose;
+
+# ABSTRACT: BerkeleyDB Cache Driver for CHI
+
 use strict;
 use warnings;
+use BerkeleyDB 0.30;
+use CHI::Util 0.25 qw(read_dir);
+use File::Path qw(mkpath);
+use Moose;
 
 extends 'CHI::Driver';
-
-our $VERSION = '0.03';
 
 has 'db'       => ( is => 'ro', lazy_build => 1 );
 has 'db_class' => ( is => 'ro', default    => 'BerkeleyDB::Hash' );
@@ -17,8 +19,6 @@ has 'dir_create_mode' => ( is => 'ro', isa => 'Int', default => oct(775) );
 has 'env' => ( is => 'ro', lazy_build => 1 );
 has 'filename' => ( is => 'ro', init_arg => undef, lazy_build => 1 );
 has 'root_dir' => ( is => 'ro' );
-
-__PACKAGE__->meta->make_immutable();
 
 sub _build_filename {
     my $self = shift;
@@ -108,15 +108,13 @@ sub get_namespaces {
     return @namespaces;
 }
 
-1;
+__PACKAGE__->meta->make_immutable;
 
 __END__
 
 =pod
 
-=head1 NAME
-
-CHI::Driver::BerkeleyDB -- Using BerkeleyDB for cache
+=for Pod::Coverage clear fetch get_keys get_namespaces remove store
 
 =head1 SYNOPSIS
 
@@ -138,60 +136,25 @@ write the cache without explicit locking.
 
 =head1 CONSTRUCTOR OPTIONS
 
-=over
-
-=item root_dir
-
-Path to the directory that will contain the Berkeley DB environment, also known
-as the "Home".
-
-=item db_class
-
+=for :list
+* root_dir
+Path to the directory that will contain the Berkeley DB environment, also known as the "Home".
+* db_class
 BerkeleyDB class, defaults to BerkeleyDB::Hash.
-
-=item env
-
+* env
 Use this Berkeley DB environment instead of creating one.
-
-=item db
-
+* db
 Use this Berkeley DB object instead of creating one.
 
-=back
+=head1 HISTORY
 
-=head1 SUPPORT AND DOCUMENTATION
-
-Questions and feedback are welcome, and should be directed to the perl-cache
-mailing list:
-
-    http://groups.google.com/group/perl-cache-discuss
-
-Bugs and feature requests will be tracked at RT:
-
-    http://rt.cpan.org/NoAuth/Bugs.html?Dist=CHI-Driver-BerkeleyDB
-
-The latest source code can be browsed and fetched at:
-
-    http://github.com/jonswar/perl-chi-driver-bdb/tree/master
-    git clone git://github.com/jonswar/perl-chi-driver-bdb.git
-
-=head1 AUTHOR
-
-Jonathan Swartz
+Originally created by Jonathan Swartz.  Version 0.04 and later maintained by
+Michael Schout.
 
 =head1 SEE ALSO
 
-L<CHI>, L<BerkeleyDB>
-
-=head1 COPYRIGHT & LICENSE
-
-Copyright (C) 2007 Jonathan Swartz.
-
-CHI::Driver::BerkeleyDB is provided "as is" and without any express or implied
-warranties, including, without limitation, the implied warranties of
-merchantibility and fitness for a particular purpose.
-
-This program is free software; you can redistribute it and/or modify it under
-the same terms as Perl itself.
+=for :list
+* L<CHI>
+* L<BerkeleyDB>
 
 =cut
