@@ -130,8 +130,6 @@ __END__
 
 =pod
 
-=for Pod::Coverage clear fetch get_keys get_namespaces remove store
-
 =head1 SYNOPSIS
 
  use CHI;
