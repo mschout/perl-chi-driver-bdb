@@ -6,22 +6,24 @@ package CHI::Driver::BerkeleyDB;
 
 use strict;
 use warnings;
+
+use Moo;
 use BerkeleyDB 0.30;
 use CHI::Util 0.25 qw(read_dir);
 use File::Path qw(mkpath);
-use Moose;
+use namespace::clean;
 
 extends 'CHI::Driver';
 
-has db => (is => 'ro', lazy_build => 1);
+has db => (is => 'lazy');
 
 has db_class => (is => 'ro', default => 'BerkeleyDB::Hash');
 
-has dir_create_mode => (is => 'ro', isa => 'Int', default => oct(775));
+has dir_create_mode => (is => 'ro', default => oct(775));
 
-has env => (is => 'ro', lazy_build => 1);
+has env => (is => 'lazy');
 
-has filename => (is => 'ro', init_arg => undef, lazy_build => 1);
+has filename => (is => 'lazy', init_arg => undef);
 
 has root_dir => (is => 'ro');
 
