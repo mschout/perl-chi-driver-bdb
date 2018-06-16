@@ -45,8 +45,11 @@ sub store {
 sub remove {
     my ($self, $key) = @_;
 
-    $self->db->db_del($key) == 0
-      or die $BerkeleyDB::Error;
+    my $status = $self->db->db_del($key);
+
+    unless ($status == 0 or $status == BerkeleyDB::DB_NOTFOUND()) {
+        die $BerkeleyDB::Error;
+    }
 }
 
 sub clear {
