@@ -32,13 +32,13 @@ sub fetch {
 
     my $data;
 
-    return ( $self->db->db_get( $key, $data ) == 0 ) ? $data : undef;
+    return $self->db->db_get($key, $data) == 0 ? $data : undef;
 }
 
 sub store {
     my ($self, $key, $data) = @_;
 
-    $self->db->db_put( $key, $data ) == 0
+    $self->db->db_put($key, $data) == 0
       or die $BerkeleyDB::Error;
 }
 
@@ -56,6 +56,7 @@ sub clear {
     my $self = shift;
 
     my $count = 0;
+
     $self->db->truncate($count) == 0
       or die $BerkeleyDB::Error;
 }
@@ -67,8 +68,8 @@ sub get_keys {
     my $cursor = $self->db->db_cursor();
     my ($key, $value) = ('', '');
 
-    while ( $cursor->c_get( $key, $value, BerkeleyDB::DB_NEXT() ) == 0 ) {
-        push( @keys, $key );
+    while ($cursor->c_get($key, $value, BerkeleyDB::DB_NEXT()) == 0) {
+        push @keys, $key;
     }
 
     return @keys;
@@ -77,18 +78,15 @@ sub get_keys {
 sub get_namespaces {
     my $self = shift;
 
-    my @contents = read_dir( $self->root_dir );
-
-    my @namespaces =
-      map { $self->unescape_for_filename( substr( $_, 0, -3 ) ) }
-      grep { /\.db$/ } @contents;
-
-    return @namespaces;
+    return
+      map  { $self->unescape_for_filename(substr $_, 0, -3) }
+      grep { /\.db$/ } read_dir($self->root_dir);
 }
 
 sub _build_filename {
     my $self = shift;
-    return $self->escape_for_filename( $self->namespace ) . ".db";
+
+    return $self->escape_for_filename($self->namespace) . ".db";
 }
 
 sub _build_env {
@@ -101,15 +99,15 @@ sub _build_env {
     }
 
     unless (-d $root_dir) {
-        mkpath( $root_dir, 0, $self->dir_create_mode );
+        mkpath($root_dir, 0, $self->dir_create_mode);
     }
 
     my $env = BerkeleyDB::Env->new(
         '-Home'   => $self->root_dir,
         '-Config' => {},
         '-Flags'  => DB_CREATE | DB_INIT_CDB | DB_INIT_MPOOL)
-      or die sprintf( "cannot open Berkeley DB environment in '%s': %s",
-        $root_dir, $BerkeleyDB::Error );
+      or die sprintf "cannot open Berkeley DB environment in '%s': %s",
+        $root_dir, $BerkeleyDB::Error;
 
     return $env;
 }
@@ -122,9 +120,8 @@ sub _build_db {
         '-Filename' => $filename,
         '-Flags'    => DB_CREATE,
         '-Env'      => $self->env)
-      or die
-      sprintf( "cannot open Berkeley DB file '%s' in environment '%s': %s",
-        $filename, $self->root_dir, $BerkeleyDB::Error );
+      or die sprintf "cannot open Berkeley DB file '%s' in environment '%s': %s",
+        $filename, $self->root_dir, $BerkeleyDB::Error;
 
     return $db;
 }
