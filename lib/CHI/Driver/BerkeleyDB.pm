@@ -27,49 +27,6 @@ has filename => (is => 'lazy', init_arg => undef);
 
 has root_dir => (is => 'ro');
 
-sub _build_filename {
-    my $self = shift;
-    return $self->escape_for_filename( $self->namespace ) . ".db";
-}
-
-sub _build_env {
-    my $self = shift;
-
-    my $root_dir = $self->root_dir;
-
-    unless (defined $root_dir) {
-        die "must specify one of env or root_dir";
-    }
-
-    unless (-d $root_dir) {
-        mkpath( $root_dir, 0, $self->dir_create_mode );
-    }
-
-    my $env = BerkeleyDB::Env->new(
-        '-Home'   => $self->root_dir,
-        '-Config' => {},
-        '-Flags'  => DB_CREATE | DB_INIT_CDB | DB_INIT_MPOOL)
-      or die sprintf( "cannot open Berkeley DB environment in '%s': %s",
-        $root_dir, $BerkeleyDB::Error );
-
-    return $env;
-}
-
-sub _build_db {
-    my $self = shift;
-
-    my $filename = $self->filename;
-    my $db       = $self->db_class->new(
-        '-Filename' => $filename,
-        '-Flags'    => DB_CREATE,
-        '-Env'      => $self->env)
-      or die
-      sprintf( "cannot open Berkeley DB file '%s' in environment '%s': %s",
-        $filename, $self->root_dir, $BerkeleyDB::Error );
-
-    return $db;
-}
-
 sub fetch {
     my ($self, $key) = @_;
 
@@ -124,6 +81,49 @@ sub get_namespaces {
       grep { /\.db$/ } @contents;
 
     return @namespaces;
+}
+
+sub _build_filename {
+    my $self = shift;
+    return $self->escape_for_filename( $self->namespace ) . ".db";
+}
+
+sub _build_env {
+    my $self = shift;
+
+    my $root_dir = $self->root_dir;
+
+    unless (defined $root_dir) {
+        die "must specify one of env or root_dir";
+    }
+
+    unless (-d $root_dir) {
+        mkpath( $root_dir, 0, $self->dir_create_mode );
+    }
+
+    my $env = BerkeleyDB::Env->new(
+        '-Home'   => $self->root_dir,
+        '-Config' => {},
+        '-Flags'  => DB_CREATE | DB_INIT_CDB | DB_INIT_MPOOL)
+      or die sprintf( "cannot open Berkeley DB environment in '%s': %s",
+        $root_dir, $BerkeleyDB::Error );
+
+    return $env;
+}
+
+sub _build_db {
+    my $self = shift;
+
+    my $filename = $self->filename;
+    my $db       = $self->db_class->new(
+        '-Filename' => $filename,
+        '-Flags'    => DB_CREATE,
+        '-Env'      => $self->env)
+      or die
+      sprintf( "cannot open Berkeley DB file '%s' in environment '%s': %s",
+        $filename, $self->root_dir, $BerkeleyDB::Error );
+
+    return $db;
 }
 
 __PACKAGE__->meta->make_immutable;
