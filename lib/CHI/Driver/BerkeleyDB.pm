@@ -153,13 +153,15 @@ write the cache without explicit locking.
 =head1 CONSTRUCTOR OPTIONS
 
 =for :list
-* root_dir
+* root_dir: string B<[required]>
 Path to the directory that will contain the Berkeley DB environment, also known as the "Home".
-* db_class
-BerkeleyDB class, defaults to BerkeleyDB::Hash.
-* env
+* db_class: string
+BerkeleyDB class, defaults to C<BerkeleyDB::Hash>.
+* dir_create_mode: integer
+The mode to use when creating the database directory if it does not exist.  Defaults to C<oct(775)>.
+* env: BerkeleyDB::Env
 Use this Berkeley DB environment instead of creating one.
-* db
+* db: BerkeleyDB object
 Use this Berkeley DB object instead of creating one.
 
 =head1 HISTORY

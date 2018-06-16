@@ -4,6 +4,7 @@ Revision history for CHI-Driver-BerkeleyDB
 
 {{$NEXT}}
     - Replace Moose with Moo, which CHI already requires.
+    - POD doc updates.
 
 0.04  2018-06-13
     - New Maintainer: Michael Schout <mschout@cpan.org>
